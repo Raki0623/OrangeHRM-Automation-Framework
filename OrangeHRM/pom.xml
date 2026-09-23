@@ -9,53 +9,51 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>26</maven.compiler.source>
-        <maven.compiler.target>26</maven.compiler.target>
+        <!-- Enforce stable Industry-Standard Java 17 LTS across all compilation layers -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <aspectj.version>1.9.24</aspectj.version>
-        <allure.version>2.35.0</allure.version>
+        <allure.version>2.35.3</allure.version>
     </properties>
+
     <dependencies>
-        <!-- Source: https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+        <!-- Selenium Java Core -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>4.45.0</version>
-            <scope>compile</scope>
         </dependency>
 
-        <!-- WebDriverManager -->
+        <!-- WebDriverManager (Unified version 6.3.4, duplicate 5.6.2 completely removed) -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>5.6.2</version>
+            <version>6.3.4</version>
         </dependency>
 
-        <!-- TestNG -->
+        <!-- TestNG Execution Engine -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.8.0</version>
         </dependency>
-        <!-- Allure TestNG -->
-        <!-- Source: https://mvnrepository.com/artifact/io.qameta.allure/allure-testng -->
+
+        <!-- Allure TestNG Integration Adapter -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
-            <version>2.35.3</version>
-            <scope>compile</scope>
+            <version>${allure.version}</version>
         </dependency>
 
-        <!-- SLF4J (for logging) -->
+        <!-- SLF4J Logger Core Implementation -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.9</version>
         </dependency>
 
-        <!-- Apache POI 7 Dependencies -->
-        <!-- Apache POI for Excel -->
+        <!-- Apache POI Core for Excel DDT Parsers -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
@@ -66,19 +64,25 @@
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.3</version>
         </dependency>
-        <!-- Apache Commons IO (Required for POI) -->
+
+        <!-- Apache Commons Dependencies (Required for Apache POI Engines) -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.22.0</version>
         </dependency>
-        <!-- Apache Commons Collections -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
         </dependency>
-        <!-- Log4j2 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.28.0</version>
+        </dependency>
+
+        <!-- Log4j2 Production Core Logger Extensions -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -89,43 +93,31 @@
             <artifactId>log4j-api</artifactId>
             <version>2.20.0</version>
         </dependency>
-        <!-- Apache Commons Compress (optional, for better performance) -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>1.28.0</version>
-        </dependency>
-        <!-- Source: https://mvnrepository.com/artifact/io.rest-assured/rest-assured -->
+
+        <!-- REST Assured API Execution Support Modules -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>6.0.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>6.3.4</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin -->
+            <!-- Maven Compiler Plugin configured uniformly for Java 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
 
-            <!-- Maven Surefire Plugin -->
+            <!-- Maven Surefire Test Execution Orchestrator Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -139,23 +131,23 @@
                     </suiteXmlFiles>
                 </configuration>
                 <dependencies>
-                    <!-- Source: https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+                    <!-- AspectJ Weaver Runtime Interceptor Attachment Hook -->
                     <dependency>
                         <groupId>org.aspectj</groupId>
                         <artifactId>aspectjweaver</artifactId>
-                        <version>1.9.24</version>
+                        <version>${aspectj.version}</version>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
             </plugin>
 
-            <!-- Allure Maven Plugin -->
+            <!-- Allure Maven Lifecycle Report Builder Plugin -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
-                <version>2.16.1</version>
+                <version>2.12.0</version>
                 <configuration>
-                    <reportVersion>${aspectj.version}</reportVersion>
+                    <reportVersion>${allure.version}</reportVersion>
                     <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
                 </configuration>
             </plugin>
