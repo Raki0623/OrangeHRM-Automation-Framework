@@ -27,7 +27,9 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
+    - name: Compile and Run Selenium Framework with Maven
+      # Directing the runner explicitly into the folder housing the pom.xml
+      working-directory: ./OrangeHRM  
       run: mvn clean test
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
