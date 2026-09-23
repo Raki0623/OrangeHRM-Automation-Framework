@@ -8,13 +8,16 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import utilities.ConfigReader;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Properties;
 
 public class OrangeHRM {
@@ -27,19 +30,38 @@ public class OrangeHRM {
     private TimePage timePage;
 
     @BeforeMethod
-    @Step("setup browser and initialize object")
-    @Description("Driver setup | Wait | Maximize")
-    public void setup()
-    {
-        WebDriverManager.chromedriver().setup();
-        driver= new ChromeDriver();
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(java.time.Duration.ofSeconds(10));
+    @Step("Setup browser instance and initialize framework components")
+    @Description("Initialize dynamic thread-safe Web Driver session")
+    public void setup() {
+        String browserType = ConfigReader.getProperty("browser");
 
-        basePage = new BasePage(driver);
+        if (browserType.equalsIgnoreCase("chrome")) {
+            WebDriverManager.chromedriver().setup();
+
+            // Configure Chrome Options for Headless Linux Runners
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless=new"); // Runs browser invisibly without GUI
+            options.addArguments("--no-sandbox"); // Bypasses OS security model layers
+            options.addArguments("--disable-dev-shm-usage"); // Overcomes limited resource issues
+            options.addArguments("--disable-gpu"); // Disables GPU hardware acceleration
+            options.addArguments("--window-size=1920,1080"); // Sets native resolution for screenshots
+
+            driver = new ChromeDriver(options);
+        } else {
+            WebDriverManager.chromedriver().setup();
+            driver = new ChromeDriver();
+        }
+
+        BasePage.setDriver(driver);
+
+        driver.manage().window().maximize();
+        int implicitWait = Integer.parseInt(ConfigReader.getProperty("implicitWait"));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
+
+        basePage  = new BasePage(driver);
         loginPage = new LoginPage(driver);
         adminPage = new AdminPage(driver);
-        pimPage = new PIMPage(driver);
+        pimPage   = new PIMPage(driver);
     }
     @Test(priority = 1)
     @Description("Verify User is Admin or Not")

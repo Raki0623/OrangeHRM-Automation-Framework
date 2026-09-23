@@ -24,6 +24,10 @@ public class BasePage {
     {
         this.driver=driver;
     }
+
+    public static void setDriver(WebDriver driver) {
+    }
+
     @Step("Logout from application")
     public void Logout()
     {
