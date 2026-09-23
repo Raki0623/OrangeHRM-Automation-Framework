@@ -35,27 +35,31 @@ public class OrangeHRM {
     public void setup() {
         String browserType = ConfigReader.getProperty("browser");
 
-        if (browserType.equalsIgnoreCase("chrome")) {
+        // Add null safety checks to handle cloud environment variables safely
+        if (browserType != null && browserType.equalsIgnoreCase("chrome")) {
             WebDriverManager.chromedriver().setup();
-
-            // Configure Chrome Options for Headless Linux Runners
             ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless=new"); // Runs browser invisibly without GUI
-            options.addArguments("--no-sandbox"); // Bypasses OS security model layers
-            options.addArguments("--disable-dev-shm-usage"); // Overcomes limited resource issues
-            options.addArguments("--disable-gpu"); // Disables GPU hardware acceleration
-            options.addArguments("--window-size=1920,1080"); // Sets native resolution for screenshots
-
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920,1080");
             driver = new ChromeDriver(options);
         } else {
+            // Fallback execution logic: If browserType is missing or null, default to Headless Chrome
             WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            driver = new ChromeDriver(options);
         }
 
         BasePage.setDriver(driver);
 
         driver.manage().window().maximize();
-        int implicitWait = Integer.parseInt(ConfigReader.getProperty("implicitWait"));
+        String waitTime = ConfigReader.getProperty("implicitWait");
+        int implicitWait = (waitTime != null) ? Integer.parseInt(waitTime) : 10;
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(implicitWait));
 
         basePage  = new BasePage(driver);
