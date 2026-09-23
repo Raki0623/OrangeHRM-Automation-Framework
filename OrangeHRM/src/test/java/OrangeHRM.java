@@ -1,7 +1,4 @@
-import Pages.AdminPage;
-import Pages.BasePage;
-import Pages.LoginPage;
-import Pages.PIMPage;
+import Pages.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
@@ -27,6 +24,7 @@ public class OrangeHRM {
     private LoginPage loginPage;
     private AdminPage adminPage;
     private PIMPage pimPage;
+    private TimePage timePage;
 
     @BeforeMethod
     @Step("setup browser and initialize object")
@@ -115,6 +113,40 @@ public class OrangeHRM {
 
         }
         pimPage.VerifyRecordDisplayed();
+        basePage.Logout();
+    }
+    public void VerifyTime() throws IOException, InterruptedException {
+        Properties properties= new Properties();
+        FileInputStream file= new FileInputStream("D:\\Java Programming\\TestNG\\Selenium\\Selenium\\src\\main\\resources\\config.properties");
+        properties.load(file);
+        String Url=properties.getProperty("url");
+        String Username=properties.getProperty("username");
+        String Password=properties.getProperty("password");
+
+
+        loginPage.NavigateToUrl(Url);
+        loginPage.Login(Username, Password);
+        timePage.ClickTimeMenu();
+        String excelpath="D:\\Java Programming\\TestNG\\Selenium\\ProjectOrangeHRM\\OrangeHRM\\src\\main\\resources\\TestData.xlsx";
+        FileInputStream file1=new FileInputStream(excelpath);
+
+        XSSFWorkbook wb=new XSSFWorkbook(file1);
+
+        XSSFSheet sheet=wb.getSheet("Sheet3");
+
+        int RowCount= wb.getSheet("Sheet3").getLastRowNum();
+        int cellcount= wb.getSheet("Sheet3").getRow(0).getLastCellNum();
+
+        for(int i=1;i<=RowCount;i++)
+        {
+            String name=sheet.getRow(i).getCell(0).getStringCellValue();
+            String expectedmessage=sheet.getRow(i).getCell(1).getStringCellValue();
+
+            System.out.println("Employeename: "+name+" Expected message: "+expectedmessage);
+            timePage.Searchtime(name,expectedmessage);
+
+        }
+        timePage.VerifyRecordDisplayed();
         basePage.Logout();
     }
     @AfterMethod
